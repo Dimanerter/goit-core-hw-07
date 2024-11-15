@@ -12,6 +12,8 @@ def input_error(func):
             return "The arguments are not correct."
         except IndexError:
             return "The arguments are not correct."
+        except TypeError:
+            return "The arguments are not correct."
     return wrapper
 
 # Парсинг ввода
@@ -23,30 +25,30 @@ def parse_input(user_input):
 # Функция для добавления контакта
 @input_error
 def add_contact(args, book):
-    name, phone, *_ = args
+    name, phone = args
     record = book.find(name)
-    message = "Contact updated."
-    if record is None:
+    if not record:
         record = Record(name)
-        book.add_record(record)
-        message = "Contact added."
-    if phone:
         record.add_phone(phone)
-    return message
-
+        book.add_record(record)
+        return "Contact added"
+    else:
+        record.add_phone(phone)
+        return "Contact updated"
+    
 # Функция для изменения контакта
 @input_error
 def change_contact(args, book):
-    name, phone = args
-    if name in book:
-        book[name] = phone
-        return "Contact updated."
-    return "Contact not found."
+    name, old_phone, new_phone = args
+    record = book.find(name)
+    record.edit_phone(old_phone, new_phone)
+    return "Contact updated"
 
 # Функция для отображения телефона по имени
 @input_error
 def show_phone(args, book):
-    return f"[{book[args[0]]}]"
+    name, *_ = args
+    return f"\n{book.find(name)}\n"
 
 # Функция для отображения всех контактов
 @input_error
@@ -54,6 +56,28 @@ def show_all(book):
     if not book:
         return "No contacts found."
     return f"All contacts:\n {book}"
+
+@input_error
+def add_birthday(args, book):
+    name, birthday = args
+    record = book.find(name)
+    record.add_birthday(birthday)
+    return "Contact updated"
+
+@input_error
+def show_birthday(args, book):
+    name, *_ = args
+    record = book.find(name)
+    return f"{name}: {record.get_birthday()}"
+
+@input_error
+def birthdays(book):
+    birthdays_date = book.get_upcoming_birthdays()
+    formatted_data = [
+        {'name': item['name'], 'birthday': item['birthday'].strftime("%d.%m.%Y")}
+        for item in birthdays_date
+    ]
+    return formatted_data
 
 # Основная функция
 def main():
@@ -78,6 +102,12 @@ def main():
                 print(show_phone(args, book))
             case "all":
                 print(show_all(book))
+            case "add-birthday":
+                print(add_birthday(args, book))
+            case "show-birthday":
+                print(show_birthday(args, book))
+            case "birthdays":
+                print(birthdays(book))
             case _:
                 print("Invalid command.")
 

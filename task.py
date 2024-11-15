@@ -64,9 +64,19 @@ class Record:
     
     def add_birthday(self, birthday):
         self.birthday = Birthday(birthday)
+        
+    def get_birthday(self):
+        if self.birthday:
+            return self.birthday
+        else:
+            raise ValueError(f"Birthday not found")
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, birthday: {self.birthday}, phones: {'; '.join(p.value for p in self.phones)}"
+        if self.birthday:
+            return f"Contact name: {self.name.value}, birthday: {self.birthday}, phones: {'; '.join(p.value for p in self.phones)}"
+        else:
+            return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+
 
 class AddressBook(UserDict):
     def add_record(self, record):
@@ -98,7 +108,7 @@ class AddressBook(UserDict):
 
                     upcoming_birthdays.append({
                         "name": record.name.value,
-                        "congratulation_date": birthday_this_year
+                        "birthday": birthday_this_year
                     })
 
         return upcoming_birthdays
