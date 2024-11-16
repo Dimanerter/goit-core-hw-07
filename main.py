@@ -72,12 +72,7 @@ def show_birthday(args, book):
 
 @input_error
 def birthdays(book):
-    birthdays_date = book.get_upcoming_birthdays()
-    formatted_data = [
-        {'name': item['name'], 'birthday': item['birthday'].strftime("%d.%m.%Y")}
-        for item in birthdays_date
-    ]
-    return formatted_data
+    return book.get_upcoming_birthdays()
 
 # Основная функция
 def main():

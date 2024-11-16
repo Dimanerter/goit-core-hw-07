@@ -26,7 +26,8 @@ class Phone(Field):
 class Birthday(Field):
     def __init__(self, value):
         try:
-             super().__init__(datetime.strptime(value, "%d.%m.%Y").date())
+            if datetime.strptime(value, "%d.%m.%Y"):
+             super().__init__(value)
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
 
@@ -98,7 +99,8 @@ class AddressBook(UserDict):
 
         for record in self.data.values():
             if record.birthday:
-                birthday_this_year = record.birthday.value.replace(year=today.year)
+                birthday_ = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
+                birthday_this_year = birthday_.replace(year=today.year)
 
                 if birthday_this_year < today:
                     birthday_this_year = birthday_this_year.replace(year=today.year + 1)
@@ -108,7 +110,7 @@ class AddressBook(UserDict):
 
                     upcoming_birthdays.append({
                         "name": record.name.value,
-                        "birthday": birthday_this_year
+                        "birthday": birthday_this_year.strftime("%d.%m.%Y")
                     })
 
         return upcoming_birthdays
@@ -132,12 +134,13 @@ class AddressBook(UserDict):
 
 # # Створення запису для John
 # john_record = Record("John")
-# john_record.add_birthday("16.11.2004")
+# john_record.add_birthday("17.11.2004")
 # john_record.add_phone("1234567890")
 # john_record.add_phone("5555555555")
 # # Додавання запису John до адресної книгиjohn_record.add_phone("5555555555")
 
 # book.add_record(john_record)
+# print(book.get_upcoming_birthdays())
 
 # # Створення та додавання нового запису для Jane
 # jane_record = Record("Jane")
